@@ -58,12 +58,13 @@ Let's jump into code:
    
 
       how to do encoding?
-       1) simple manual way:	
-           find all unique char in all texts
-           create a simple dictionary (key,value)=[char,num] for encoder and (value,char) for decoder
-       2) encoder proposed by Google: SentencePiece
-       3) encoder proposed by OpenAI, which is also used by chatGPT models: Tiktoken
-       4) there exist some layer in tensorflow and torch to do that
+      
+           1) simple manual way:	
+              find all unique char in all texts
+              create a simple dictionary (key,value)=[char,num] for encoder and (value,char) for decoder
+           2) encoder proposed by Google: SentencePiece
+           3) encoder proposed by OpenAI, which is also used by chatGPT models: Tiktoken
+           4) there exist some layer in tensorflow and torch to do that
 2) ### data feeding to model 
     how to feed the data to model?
    1) Time Dimension
