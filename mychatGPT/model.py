@@ -12,7 +12,7 @@ class BigramLanguageModel(nn.Module):
     def __init__(self, vocab_size, cfg):
         super().__init__()
         # each token directly reads off the logits for the next token from a lookup table
-        self.token_embedding_table = nn.Embedding(vocab_size, cfg.n_embd)  # اینم عوض کرد به n-embed (number of embeding dim)
+        self.token_embedding_table = nn.Embedding(vocab_size, cfg.n_embd)  # change to embedding dim 
         self.position_embedding_table = nn.Embedding(cfg.block_size, cfg.n_embd)
         self.blocks = nn.Sequential(*[Block(cfg.n_embd, n_head=cfg.n_head) for _ in range(cfg.n_layer)])
         self.ln_f = nn.LayerNorm(cfg.n_embd)  # final layer norm
@@ -24,17 +24,11 @@ class BigramLanguageModel(nn.Module):
         B, T = idx.shape
 
         # idx and targets are both (B,T) tensor of integers
-        tok_emb = self.token_embedding_table(idx)  # (B,T,C) )(فرض کردیم n-embed=c)
+        tok_emb = self.token_embedding_table(idx)  # (B,T,C) ) [assume nembed =C]
         tok_emb.to(device)
         '''
-        بخاطر تغییر بالا در nn.embedding
-        عبارت بالا دیکه مستقیم logitsرا بما نمیده
-        بلکه توکن را می ده و بعدش به یک لایه dense برای تبدیل به logits نیاز داریم
-
-
-        payyin: na tanha encode the identity of tokens but also encode the position of them
-
-                '''
+        As we changed token_embedding_table, tok_emb is not direct logits now (it will give us the token->we need a dense layer to change it to logits     
+        '''
 
         pos_emb = self.position_embedding_table(torch.arange(T, device=self.cfg.device))  # (T,C) az 0 ta T-1
         x = tok_emb + pos_emb  # (B,T,C) [b,t,c +t , c broadcat emal mishe]
@@ -56,7 +50,7 @@ class BigramLanguageModel(nn.Module):
         # idx is (B, T) array of indices in the current context
         for _ in range(max_new_tokens):
             # crop idx to the last block_size tokens
-            idx_cond = idx[:, -self.cfg.block_size:]  #بخاط اینکه باید سایز پوزیشن امبدینک هم این باشه we never pass in more than block size
+            idx_cond = idx[:, -self.cfg.block_size:]  # we never pass in more than block size (the size of pos embedding should be this too)
             # get the predictions
             logits, loss = self(idx_cond)
             # focus only on the last time step
